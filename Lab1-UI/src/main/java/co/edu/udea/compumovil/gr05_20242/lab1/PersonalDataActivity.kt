@@ -11,17 +11,16 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
-import co.edu.udea.compumovil.gr05_20242.lab1.ui.components.PersonalData.PersonalDataForm
 import co.edu.udea.compumovil.gr05_20242.lab1.ui.theme.LabsCM20242Gr05Theme
 
-class MainActivity : ComponentActivity() {
+class PersonalDataActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContent {
             LabsCM20242Gr05Theme {
                 Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
-                    Greeting(
+                    Greeting2(
                         name = "Android",
                         modifier = Modifier.padding(innerPadding)
                     )
@@ -32,20 +31,17 @@ class MainActivity : ComponentActivity() {
 }
 
 @Composable
-fun Greeting(name: String, modifier: Modifier = Modifier) {
-    PersonalDataForm {
-
-    }
+fun Greeting2(name: String, modifier: Modifier = Modifier) {
+    Text(
+        text = "Hello $name!",
+        modifier = modifier
+    )
 }
 
 @Preview(showBackground = true)
 @Composable
-fun GreetingPreview() {
+fun GreetingPreview2() {
     LabsCM20242Gr05Theme {
-       PersonalDataForm {
-
-       }
+        Greeting2("Android")
     }
 }
-
-
