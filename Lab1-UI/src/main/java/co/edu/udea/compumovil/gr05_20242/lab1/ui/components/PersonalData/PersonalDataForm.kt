@@ -5,15 +5,23 @@ import co.edu.udea.compumovil.gr05_20242.lab1.ui.components.PersonalDataModel
 
 import android.app.DatePickerDialog
 import android.widget.DatePicker
+import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.AddCircle
 import androidx.compose.material.icons.filled.DateRange
+import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.KeyboardArrowDown
 import androidx.compose.material.icons.filled.KeyboardArrowUp
+import androidx.compose.material.icons.filled.Menu
+import androidx.compose.material.icons.filled.Person
 import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -21,15 +29,22 @@ import androidx.compose.material3.ExposedDropdownMenuBox
 import androidx.compose.material3.ExposedDropdownMenuDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.RadioButton
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
+import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.*
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import java.util.*
@@ -38,7 +53,8 @@ import java.util.*
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun PersonalDataForm(
-    onFormSubmit: (PersonalDataModel) -> Unit // Function to handle form submission
+    modifier: Modifier,
+    personalDataModel: PersonalDataModel
 ) {
     // State variables for the form
     var nombres by remember { mutableStateOf("") }
@@ -51,6 +67,8 @@ fun PersonalDataForm(
     var expandedDropdown by remember { mutableStateOf(false) }
     val context = LocalContext.current
     val gradoOptions = listOf("Primaria", "Secundaria", "Universitaria", "Otro")
+
+    var isFocusedName by remember { mutableStateOf(false) }
 
     // DatePicker dialog setup
     val calendar = Calendar.getInstance()
@@ -66,37 +84,61 @@ fun PersonalDataForm(
     )
 
     Column(modifier = Modifier.padding(16.dp)) {
-        // Nombres Field
-        TextField(
+        OutlinedTextField(
             value = nombres,
             onValueChange = { nombres = it },
-            label = { Text("Nombres") },
+            label = {
+                Text(
+                    text = "Nombres"
+                )
+            },
             modifier = Modifier.fillMaxWidth(),
             keyboardOptions = KeyboardOptions(
                 capitalization = KeyboardCapitalization.Sentences,
-                keyboardType = KeyboardType.Text
+                keyboardType = KeyboardType.Text,
+                autoCorrect = false
             ),
-            isError = nombres.isEmpty(),
+            leadingIcon = {
+                Icon(
+                    imageVector = Icons.Default.Person,
+                    contentDescription = "Icono de persona"
+                )
+            }
         )
         Spacer(modifier = Modifier.height(8.dp))
 
         // Apellidos Field
-        TextField(
+        OutlinedTextField(
             value = apellidos,
             onValueChange = { apellidos = it },
-            label = { Text("Apellidos") },
+            label = {
+                Text(
+                    text = "Nombres"
+                )
+            },
             modifier = Modifier.fillMaxWidth(),
             keyboardOptions = KeyboardOptions(
                 capitalization = KeyboardCapitalization.Sentences,
-                keyboardType = KeyboardType.Text
+                keyboardType = KeyboardType.Text,
+                autoCorrect = false
             ),
-            isError = apellidos.isEmpty(),
+            leadingIcon = {
+                Icon(
+                    imageVector = Icons.Default.AddCircle,
+                    contentDescription = "Icono de persona"
+                )
+            }
         )
         Spacer(modifier = Modifier.height(8.dp))
 
         // Sexo Radio Buttons
-        Text("Sexo")
-        Row {
+        Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.fillMaxWidth()){
+            Icon(
+                imageVector = Icons.Default.Favorite,
+                contentDescription = "Icono de sexo",
+                modifier = Modifier.padding(end = 6.dp)
+            )
+            Text("Sexo")
             RadioButton(
                 selected = sexo == "Hombre",
                 onClick = { sexo = "Hombre" }
@@ -109,22 +151,28 @@ fun PersonalDataForm(
             )
             Text("Mujer")
         }
-        Spacer(modifier = Modifier.height(8.dp))
+        Spacer(modifier = Modifier.height(2.dp))
 
         // Fecha de Nacimiento Picker
-        TextField(
-            value = fechaNacimiento,
-            onValueChange = { },
-            label = { Text("Fecha de Nacimiento") },
-            modifier = Modifier.fillMaxWidth(),
-            trailingIcon = {
-                IconButton(onClick = { datePickerDialog.show() }) {
-                    Icon(Icons.Filled.DateRange, contentDescription = "Select Date")
-                }
-            },
-            readOnly = true,
-            isError = fechaNacimiento.isEmpty(),
-        )
+        Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.fillMaxWidth().padding(end = 6.dp)){
+            Icon(
+                imageVector = Icons.Default.DateRange,
+                contentDescription = "Icono de calendario",
+                modifier = Modifier.padding(end = 6.dp)
+            )
+            Text("Fecha de nacimiento")
+
+            //insertar boton con calendario
+            Button(
+                onClick = { },
+                colors = ButtonDefaults.buttonColors(Color(0xFF2196F3)), //
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(16.dp)
+            ) {
+                Text(text = "Fecha", color = Color.White)
+            }
+        }
         Spacer(modifier = Modifier.height(8.dp))
 
         ExposedDropdownMenuBox(
@@ -139,7 +187,14 @@ fun PersonalDataForm(
                 label = { Text("Grado de Escolaridad") },
                 trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = expandedDropdown) },
                 colors = ExposedDropdownMenuDefaults.textFieldColors(),
-                modifier = Modifier.menuAnchor().fillMaxWidth()
+                modifier = Modifier.menuAnchor().fillMaxWidth(),
+                leadingIcon = {
+                    Icon(
+                        imageVector = Icons.Filled.Menu,
+                        contentDescription = "Icono de escolaridad",
+                        modifier = Modifier.padding(end = 6.dp)
+                    )
+                }
             )
 
             ExposedDropdownMenu(
@@ -173,11 +228,9 @@ fun PersonalDataForm(
                     telefono = telefono,
                     email = email
                 )
-                if (validateFields(personalData)) {
-                    onFormSubmit(personalData) // Call the function to handle form submission
-                }
             },
-            modifier = Modifier.fillMaxWidth()
+            modifier = Modifier.fillMaxWidth(0.5f).align(Alignment.End),
+            colors =  ButtonDefaults.buttonColors(Color(0xFF2196F3))
         ) {
             Text("Enviar")
         }

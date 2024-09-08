@@ -21,8 +21,7 @@ class MainActivity : ComponentActivity() {
         setContent {
             LabsCM20242Gr05Theme {
                 Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
-                    Greeting(
-                        name = "Android",
+                    PersonalDataForm(
                         modifier = Modifier.padding(innerPadding)
                     )
                 }
@@ -31,20 +30,12 @@ class MainActivity : ComponentActivity() {
     }
 }
 
-@Composable
-fun Greeting(name: String, modifier: Modifier = Modifier) {
-    PersonalDataForm {
-
-    }
-}
 
 @Preview(showBackground = true)
 @Composable
 fun GreetingPreview() {
     LabsCM20242Gr05Theme {
-       PersonalDataForm {
-
-       }
+       PersonalDataForm(modifier = Modifier)
     }
 }
 
