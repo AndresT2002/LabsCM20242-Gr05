@@ -4,6 +4,8 @@ import androidx.compose.runtime.Composable;
 import co.edu.udea.compumovil.gr05_20242.lab1.ui.components.PersonalDataModel
 
 import android.app.DatePickerDialog
+import android.content.res.Configuration
+import android.util.Log
 import android.widget.DatePicker
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -22,6 +24,8 @@ import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.DatePicker
+import androidx.compose.material3.DatePickerDialog
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -32,21 +36,31 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.RadioButton
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
+import androidx.compose.material3.rememberDatePickerState
+import androidx.compose.material3.rememberTimePickerState
 import androidx.compose.runtime.*
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.layout.onGloballyPositioned
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.core.widget.TextViewCompat
+import kotlinx.coroutines.CoroutineScope
+import java.text.SimpleDateFormat
 import java.util.*
 
 
@@ -54,36 +68,37 @@ import java.util.*
 @Composable
 fun PersonalDataForm(
     modifier: Modifier,
-    personalDataModel: PersonalDataModel
+    personalDataModel: PersonalDataModel,
+    openForm: MutableState<Boolean>
 ) {
-    // State variables for the form
-    var nombres by remember { mutableStateOf("") }
-    var apellidos by remember { mutableStateOf("") }
-    var sexo by remember { mutableStateOf("") }
-    var fechaNacimiento by remember { mutableStateOf("") }
-    var gradoEscolaridad by remember { mutableStateOf("Primaria") }
-    var telefono by remember { mutableStateOf("") }
-    var email by remember { mutableStateOf("") }
-    var expandedDropdown by remember { mutableStateOf(false) }
-    val context = LocalContext.current
+    //data
+    var nombres by rememberSaveable { mutableStateOf("") }
+    var apellidos by rememberSaveable  { mutableStateOf("") }
+    var sexo by rememberSaveable  { mutableStateOf("") }
+    val fechaNacimiento = rememberSaveable  { mutableStateOf<String>("") }
+    var gradoEscolaridad by rememberSaveable  { mutableStateOf("Primaria") }
+
+    //radio buttons sex
+    var expandedDropdown by rememberSaveable { mutableStateOf(false) }
     val gradoOptions = listOf("Primaria", "Secundaria", "Universitaria", "Otro")
 
-    var isFocusedName by remember { mutableStateOf(false) }
+    //Date Form
+    val openDate = rememberSaveable { mutableStateOf(false) }
 
-    // DatePicker dialog setup
-    val calendar = Calendar.getInstance()
-    val year = calendar.get(Calendar.YEAR)
-    val month = calendar.get(Calendar.MONTH)
-    val day = calendar.get(Calendar.DAY_OF_MONTH)
+    // Estado para manejar errores
+    var nombresError by rememberSaveable { mutableStateOf(false) }
+    var apellidosError by rememberSaveable { mutableStateOf(false) }
+    var sexoError by rememberSaveable { mutableStateOf(false) }
+    var fechaNacimientoError by rememberSaveable { mutableStateOf(false) }
 
-    val datePickerDialog = DatePickerDialog(
-        context,
-        { _: DatePicker, selectedYear: Int, selectedMonth: Int, selectedDayOfMonth: Int ->
-            fechaNacimiento = "$selectedDayOfMonth/${selectedMonth + 1}/$selectedYear"
-        }, year, month, day
-    )
+
+    val landscape = LocalConfiguration.current.orientation == Configuration.ORIENTATION_LANDSCAPE
+
 
     Column(modifier = Modifier.padding(16.dp)) {
+        if(!landscape){
+            Text("LandScape")
+        }
         OutlinedTextField(
             value = nombres,
             onValueChange = { nombres = it },
@@ -91,8 +106,10 @@ fun PersonalDataForm(
                 Text(
                     text = "Nombres"
                 )
+
             },
             modifier = Modifier.fillMaxWidth(),
+            isError = nombresError,
             keyboardOptions = KeyboardOptions(
                 capitalization = KeyboardCapitalization.Sentences,
                 keyboardType = KeyboardType.Text,
@@ -105,18 +122,21 @@ fun PersonalDataForm(
                 )
             }
         )
+        if (nombresError) {
+            Text("Campo obligatorio", color = MaterialTheme.colorScheme.error)
+        }
         Spacer(modifier = Modifier.height(8.dp))
 
-        // Apellidos Field
         OutlinedTextField(
             value = apellidos,
             onValueChange = { apellidos = it },
             label = {
                 Text(
-                    text = "Nombres"
+                    text = "Apellidos"
                 )
             },
             modifier = Modifier.fillMaxWidth(),
+            isError = apellidosError,
             keyboardOptions = KeyboardOptions(
                 capitalization = KeyboardCapitalization.Sentences,
                 keyboardType = KeyboardType.Text,
@@ -129,6 +149,9 @@ fun PersonalDataForm(
                 )
             }
         )
+        if (apellidosError) {
+            Text("Campo obligatorio", color = MaterialTheme.colorScheme.error)
+        }
         Spacer(modifier = Modifier.height(8.dp))
 
         // Sexo Radio Buttons
@@ -141,15 +164,18 @@ fun PersonalDataForm(
             Text("Sexo")
             RadioButton(
                 selected = sexo == "Hombre",
-                onClick = { sexo = "Hombre" }
+                onClick = { sexo = "Hombre"; sexoError = false }
             )
             Text("Hombre")
             Spacer(modifier = Modifier.width(16.dp))
             RadioButton(
                 selected = sexo == "Mujer",
-                onClick = { sexo = "Mujer" }
+                onClick = { sexo = "Mujer"; sexoError = false }
             )
             Text("Mujer")
+        }
+        if (sexoError) {
+            Text("Debe seleccionar un sexo", color = MaterialTheme.colorScheme.error)
         }
         Spacer(modifier = Modifier.height(2.dp))
 
@@ -164,14 +190,21 @@ fun PersonalDataForm(
 
             //insertar boton con calendario
             Button(
-                onClick = { },
+                onClick = { openDate.value = true },
                 colors = ButtonDefaults.buttonColors(Color(0xFF2196F3)), //
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(16.dp)
             ) {
-                Text(text = "Fecha", color = Color.White)
+                Text(text = if (fechaNacimiento.value.isNotEmpty()) fechaNacimiento.value else "Seleccionar fecha", color = Color.White)
             }
+
+            DatePickerDialogInput(openDate = openDate, fechaNacimiento = fechaNacimiento )
+
+        }
+
+        if (fechaNacimientoError) {
+            Text("Debe seleccionar una fecha de nacimiento", color = MaterialTheme.colorScheme.error)
         }
         Spacer(modifier = Modifier.height(8.dp))
 
@@ -218,16 +251,22 @@ fun PersonalDataForm(
         // Submit Button
         Button(
             onClick = {
-                // Create an instance of PersonalDataModel and pass the values
-                val personalData = PersonalDataModel(
-                    nombres = nombres,
-                    apellidos = apellidos,
-                    sexo = sexo,
-                    fechaNacimiento = fechaNacimiento,
-                    gradoEscolaridad = gradoEscolaridad,
-                    telefono = telefono,
-                    email = email
-                )
+                nombresError = nombres.isEmpty()
+                apellidosError = apellidos.isEmpty()
+                sexoError = sexo.isEmpty()
+                fechaNacimientoError = fechaNacimiento.value.isEmpty()
+
+                // Si no hay errores, procede con la asignación de datos
+                if (!nombresError && !apellidosError && !sexoError && !fechaNacimientoError) {
+                    personalDataModel.nombres = nombres
+                    personalDataModel.apellidos = apellidos
+                    personalDataModel.sexo = sexo
+                    personalDataModel.fechaNacimiento = fechaNacimiento.value
+                    personalDataModel.gradoEscolaridad = gradoEscolaridad
+
+                    // Cerrar el formulario
+                    openForm.value = false
+                }
             },
             modifier = Modifier.fillMaxWidth(0.5f).align(Alignment.End),
             colors =  ButtonDefaults.buttonColors(Color(0xFF2196F3))
@@ -237,12 +276,37 @@ fun PersonalDataForm(
     }
 }
 
-// Validation function for the form
-fun validateFields(data: PersonalDataModel): Boolean {
-    return data.nombres.isNotEmpty() &&
-            data.apellidos.isNotEmpty() &&
-            data.sexo.isNotEmpty() &&
-            data.fechaNacimiento.isNotEmpty() &&
-            data.telefono.isNotEmpty() &&
-            data.email.isNotEmpty()
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun DatePickerDialogInput(openDate:MutableState<Boolean>,fechaNacimiento:MutableState<String> ){
+    if (openDate.value) {
+        val datePickerState = rememberDatePickerState()
+        val confirmEnabled = remember {
+            derivedStateOf { datePickerState.selectedDateMillis != null }
+        }
+        val formatter: SimpleDateFormat = SimpleDateFormat("dd/MM/yyyy hh:mm:ss.SSS", Locale.getDefault())
+        formatter.timeZone = TimeZone.getTimeZone("UTC")
+
+        DatePickerDialog(
+            onDismissRequest = {
+                openDate.value = false
+            },
+            confirmButton = {
+                TextButton(
+                    onClick = {
+                        openDate.value = false
+                        fechaNacimiento.value = formatter.format(datePickerState.selectedDateMillis)
+                    },
+                    enabled = confirmEnabled.value
+                ) {
+                    Text("OK")
+                }
+            },
+            dismissButton = {
+                TextButton(onClick = { openDate.value = false }) { Text("Cancel") }
+            }
+        ) {
+            DatePicker(state = datePickerState)
+        }
+    }
 }
