@@ -39,13 +39,15 @@ class MainActivity : ComponentActivity() {
 
 @Composable
 fun Forms(modifier: Modifier) {
-    val persona = PersonalDataModel() // informacion
+    var persona = remember { mutableStateOf<PersonalDataModel>(PersonalDataModel())} // informacion
     val openForm1 = rememberSaveable { mutableStateOf<Boolean>(true) }
     if(openForm1.value) {
-        PersonalDataForm(modifier = Modifier, persona, openForm1)
+        PersonalDataForm(modifier = Modifier, openForm = openForm1, onPersonaUpdated = { updatedPersona ->
+            // Actualiza el estado persona con los cambios del formulario
+            persona.value = updatedPersona})
     }
     if(!openForm1.value) {
-        Log.d("Ayuda", persona.toString())
+        Log.d("Ayuda", persona.value.toString())
     }
 }
 

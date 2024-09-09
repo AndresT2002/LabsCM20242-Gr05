@@ -68,7 +68,7 @@ import java.util.*
 @Composable
 fun PersonalDataForm(
     modifier: Modifier,
-    personalDataModel: PersonalDataModel,
+    onPersonaUpdated: (PersonalDataModel) -> Unit,
     openForm: MutableState<Boolean>
 ) {
     //data
@@ -96,9 +96,6 @@ fun PersonalDataForm(
 
 
     Column(modifier = Modifier.padding(16.dp)) {
-        if(!landscape){
-            Text("LandScape")
-        }
         OutlinedTextField(
             value = nombres,
             onValueChange = { nombres = it },
@@ -258,11 +255,16 @@ fun PersonalDataForm(
 
                 // Si no hay errores, procede con la asignación de datos
                 if (!nombresError && !apellidosError && !sexoError && !fechaNacimientoError) {
-                    personalDataModel.nombres = nombres
-                    personalDataModel.apellidos = apellidos
-                    personalDataModel.sexo = sexo
-                    personalDataModel.fechaNacimiento = fechaNacimiento.value
-                    personalDataModel.gradoEscolaridad = gradoEscolaridad
+
+                    val updatedPersona = PersonalDataModel(
+                        nombres = nombres,
+                        apellidos = apellidos,
+                        sexo = sexo,
+                        fechaNacimiento = fechaNacimiento.value,
+                        gradoEscolaridad = gradoEscolaridad
+                    )
+
+                    onPersonaUpdated(updatedPersona)
 
                     // Cerrar el formulario
                     openForm.value = false
@@ -278,7 +280,7 @@ fun PersonalDataForm(
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun DatePickerDialogInput(openDate:MutableState<Boolean>,fechaNacimiento:MutableState<String> ){
+fun DatePickerDialogInput(openDate:MutableState<Boolean>,fechaNacimiento:MutableState<String>){
     if (openDate.value) {
         val datePickerState = rememberDatePickerState()
         val confirmEnabled = remember {
