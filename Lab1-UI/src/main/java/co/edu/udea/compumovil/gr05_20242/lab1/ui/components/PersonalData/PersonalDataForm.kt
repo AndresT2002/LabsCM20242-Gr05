@@ -53,12 +53,15 @@ import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.core.widget.TextViewCompat
+import co.edu.udea.compumovil.gr05_20242.lab1.R
 import kotlinx.coroutines.CoroutineScope
 import java.text.SimpleDateFormat
 import java.util.*
@@ -69,7 +72,8 @@ import java.util.*
 fun PersonalDataForm(
     modifier: Modifier,
     onPersonaUpdated: (PersonalDataModel) -> Unit,
-    openForm: MutableState<Boolean>
+    openForm: MutableState<Boolean>,
+    openForm2:MutableState<Boolean>
 ) {
     //data
     var nombres by rememberSaveable { mutableStateOf("") }
@@ -95,14 +99,14 @@ fun PersonalDataForm(
     val landscape = LocalConfiguration.current.orientation == Configuration.ORIENTATION_LANDSCAPE
 
 
-    Column(modifier = Modifier.padding(16.dp)) {
+    Column(modifier = Modifier
+        .padding(16.dp)
+        .padding(top = 52.dp)) {
         OutlinedTextField(
             value = nombres,
             onValueChange = { nombres = it },
             label = {
-                Text(
-                    text = "Nombres"
-                )
+                Text(text = stringResource(id = R.string.nombres))
 
             },
             modifier = Modifier.fillMaxWidth(),
@@ -110,7 +114,7 @@ fun PersonalDataForm(
             keyboardOptions = KeyboardOptions(
                 capitalization = KeyboardCapitalization.Sentences,
                 keyboardType = KeyboardType.Text,
-                autoCorrect = false
+                autoCorrect = false, imeAction = ImeAction.Next
             ),
             leadingIcon = {
                 Icon(
@@ -119,6 +123,9 @@ fun PersonalDataForm(
                 )
             }
         )
+        if (landscape) {
+            Text(landscape.toString(), color = MaterialTheme.colorScheme.error)
+        }
         if (nombresError) {
             Text("Campo obligatorio", color = MaterialTheme.colorScheme.error)
         }
@@ -128,16 +135,14 @@ fun PersonalDataForm(
             value = apellidos,
             onValueChange = { apellidos = it },
             label = {
-                Text(
-                    text = "Apellidos"
-                )
+                Text(text = stringResource(id = R.string.apellidos))
             },
             modifier = Modifier.fillMaxWidth(),
             isError = apellidosError,
             keyboardOptions = KeyboardOptions(
                 capitalization = KeyboardCapitalization.Sentences,
                 keyboardType = KeyboardType.Text,
-                autoCorrect = false
+                autoCorrect = false, imeAction = ImeAction.Next
             ),
             leadingIcon = {
                 Icon(
@@ -158,7 +163,7 @@ fun PersonalDataForm(
                 contentDescription = "Icono de sexo",
                 modifier = Modifier.padding(end = 6.dp)
             )
-            Text("Sexo")
+            Text(text = stringResource(id = R.string.sexo))
             RadioButton(
                 selected = sexo == "Hombre",
                 onClick = { sexo = "Hombre"; sexoError = false }
@@ -172,6 +177,7 @@ fun PersonalDataForm(
             Text("Mujer")
         }
         if (sexoError) {
+
             Text("Debe seleccionar un sexo", color = MaterialTheme.colorScheme.error)
         }
         Spacer(modifier = Modifier.height(2.dp))
@@ -183,7 +189,7 @@ fun PersonalDataForm(
                 contentDescription = "Icono de calendario",
                 modifier = Modifier.padding(end = 6.dp)
             )
-            Text("Fecha de nacimiento")
+            Text(text = stringResource(id = R.string.fecha_nacimiento))
 
             //insertar boton con calendario
             Button(
@@ -193,7 +199,7 @@ fun PersonalDataForm(
                     .fillMaxWidth()
                     .padding(16.dp)
             ) {
-                Text(text = if (fechaNacimiento.value.isNotEmpty()) fechaNacimiento.value else "Seleccionar fecha", color = Color.White)
+                Text(text = if (fechaNacimiento.value.isNotEmpty()) fechaNacimiento.value else stringResource(id = R.string.seleccionar_fecha), color = Color.White)
             }
 
             DatePickerDialogInput(openDate = openDate, fechaNacimiento = fechaNacimiento )
@@ -214,7 +220,7 @@ fun PersonalDataForm(
                 value = gradoEscolaridad,
                 onValueChange = {},
                 readOnly = true,
-                label = { Text("Grado de Escolaridad") },
+                label = { Text(text = stringResource(id = R.string.grado_escolaridad)) },
                 trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = expandedDropdown) },
                 colors = ExposedDropdownMenuDefaults.textFieldColors(),
                 modifier = Modifier.menuAnchor().fillMaxWidth(),
@@ -268,6 +274,8 @@ fun PersonalDataForm(
 
                     // Cerrar el formulario
                     openForm.value = false
+                    // Abrir el formulario
+                    openForm2.value = true
                 }
             },
             modifier = Modifier.fillMaxWidth(0.5f).align(Alignment.End),

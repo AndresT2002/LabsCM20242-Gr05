@@ -16,6 +16,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
+import co.edu.udea.compumovil.gr05_20242.lab1.ui.components.ContactData.ContactDataForm
 import co.edu.udea.compumovil.gr05_20242.lab1.ui.components.PersonalData.PersonalDataForm
 import co.edu.udea.compumovil.gr05_20242.lab1.ui.components.PersonalDataModel
 import co.edu.udea.compumovil.gr05_20242.lab1.ui.theme.LabsCM20242Gr05Theme
@@ -41,12 +42,21 @@ class MainActivity : ComponentActivity() {
 fun Forms(modifier: Modifier) {
     var persona = remember { mutableStateOf<PersonalDataModel>(PersonalDataModel())} // informacion
     val openForm1 = rememberSaveable { mutableStateOf<Boolean>(true) }
+    val openForm2 = rememberSaveable { mutableStateOf<Boolean>(false) }
     if(openForm1.value) {
-        PersonalDataForm(modifier = Modifier, openForm = openForm1, onPersonaUpdated = { updatedPersona ->
+        PersonalDataForm(modifier = Modifier, openForm = openForm1, openForm2 = openForm2, onPersonaUpdated = { updatedPersona ->
             // Actualiza el estado persona con los cambios del formulario
             persona.value = updatedPersona})
     }
     if(!openForm1.value) {
+        Log.d("Ayuda", persona.value.toString())
+    }
+    if(openForm2.value) {
+        ContactDataForm(modifier = Modifier, openForm = openForm1, onPersonaUpdated = { updatedPersona ->
+            // Actualiza el estado persona con los cambios del formulario
+            persona.value = updatedPersona})
+    }
+    if(!openForm2.value) {
         Log.d("Ayuda", persona.value.toString())
     }
 }

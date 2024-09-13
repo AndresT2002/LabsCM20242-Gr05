@@ -1,0 +1,16 @@
+<resources>
+    <string name="app_name">LabsCM20242-Gr05</string>
+    <string name="title_activity_personal_data">PersonalDataActivity</string>
+    <string name="telefono">Phone</string>
+    <string name="direccion">Address</string>
+    <string name="email">Email</string>
+    <string name="pais">Country</string>
+    <string name="nombres">First Name</string>
+    <string name="apellidos">Last Name</string>
+    <string name="sexo">Gender</string>
+    <string name="ciudad">City</string>
+    <string name="fecha_nacimiento">Date of Birth</string>
+    <string name="grado_escolaridad">Education Level</string>
+    <string name="seleccionar_fecha">Select Date</string>
+
+</resources>
