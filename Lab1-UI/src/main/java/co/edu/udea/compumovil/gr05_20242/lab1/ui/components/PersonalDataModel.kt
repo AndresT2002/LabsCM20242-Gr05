@@ -14,4 +14,24 @@ data class PersonalDataModel(
         var email: String = "",
         var pais: String = "",
         var ciudad: String = ""
-)
+) {
+        override fun toString(): String {
+                return """
+            Información Personal:
+            --------------------
+            Nombres           : $nombres
+            Apellidos         : $apellidos
+            Sexo              : $sexo
+            Fecha de Nacimiento: $fechaNacimiento
+            Grado de Escolaridad: $gradoEscolaridad
+
+            Información de Contacto:
+            ------------------------
+            Teléfono          : $telefono
+            Dirección         : $direccion
+            Email             : $email
+            País              : $pais
+            Ciudad            : $ciudad
+        """.trimIndent()
+        }
+}

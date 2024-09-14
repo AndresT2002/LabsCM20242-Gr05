@@ -63,6 +63,7 @@ import androidx.compose.ui.unit.dp
 import androidx.core.widget.TextViewCompat
 import co.edu.udea.compumovil.gr05_20242.lab1.R
 import kotlinx.coroutines.CoroutineScope
+import org.intellij.lang.annotations.JdkConstants.HorizontalAlignment
 import java.text.SimpleDateFormat
 import java.util.*
 
@@ -102,62 +103,118 @@ fun PersonalDataForm(
     Column(modifier = Modifier
         .padding(16.dp)
         .padding(top = 52.dp)) {
-        OutlinedTextField(
-            value = nombres,
-            onValueChange = { nombres = it },
-            label = {
-                Text(text = stringResource(id = R.string.nombres))
+        if (landscape) {
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween
+            ) {
+                OutlinedTextField(
+                    value = nombres,
+                    onValueChange = { nombres = it },
+                    label = {
+                        Text(text = stringResource(id = R.string.nombres))
+                    },
+                    modifier = Modifier.weight(1f).padding(end = 8.dp),
+                    isError = nombresError,
+                    keyboardOptions = KeyboardOptions(
+                        capitalization = KeyboardCapitalization.Sentences,
+                        keyboardType = KeyboardType.Text,
+                        autoCorrect = false,
+                        imeAction = ImeAction.Next
+                    ),
+                    leadingIcon = {
+                        Icon(
+                            imageVector = Icons.Default.Person,
+                            contentDescription = "Icono de persona"
+                        )
+                    }
+                )
 
-            },
-            modifier = Modifier.fillMaxWidth(),
-            isError = nombresError,
-            keyboardOptions = KeyboardOptions(
-                capitalization = KeyboardCapitalization.Sentences,
-                keyboardType = KeyboardType.Text,
-                autoCorrect = false, imeAction = ImeAction.Next
-            ),
-            leadingIcon = {
-                Icon(
-                    imageVector = Icons.Default.Person,
-                    contentDescription = "Icono de persona"
+                OutlinedTextField(
+                    value = apellidos,
+                    onValueChange = { apellidos = it },
+                    label = {
+                        Text(text = stringResource(id = R.string.apellidos))
+                    },
+                    modifier = Modifier.weight(1f).padding(start = 8.dp),
+                    isError = apellidosError,
+                    keyboardOptions = KeyboardOptions(
+                        capitalization = KeyboardCapitalization.Sentences,
+                        keyboardType = KeyboardType.Text,
+                        autoCorrect = false,
+                        imeAction = ImeAction.Next
+                    ),
+                    leadingIcon = {
+                        Icon(
+                            imageVector = Icons.Default.AddCircle,
+                            contentDescription = "Icono de persona"
+                        )
+                    }
                 )
             }
-        )
-        if (landscape) {
-            Text(landscape.toString(), color = MaterialTheme.colorScheme.error)
+        } else {
+            // Layout para la orientación vertical
+            Column(modifier = Modifier.fillMaxWidth()) {
+                OutlinedTextField(
+                    value = nombres,
+                    onValueChange = { nombres = it },
+                    label = {
+                        Text(text = stringResource(id = R.string.nombres))
+                    },
+                    modifier = Modifier.fillMaxWidth(),
+                    isError = nombresError,
+                    keyboardOptions = KeyboardOptions(
+                        capitalization = KeyboardCapitalization.Sentences,
+                        keyboardType = KeyboardType.Text,
+                        autoCorrect = false,
+                        imeAction = ImeAction.Next
+                    ),
+                    leadingIcon = {
+                        Icon(
+                            imageVector = Icons.Default.Person,
+                            contentDescription = "Icono de persona"
+                        )
+                    }
+                )
+
+                Spacer(modifier = Modifier.height(8.dp))
+
+                OutlinedTextField(
+                    value = apellidos,
+                    onValueChange = { apellidos = it },
+                    label = {
+                        Text(text = stringResource(id = R.string.apellidos))
+                    },
+                    modifier = Modifier.fillMaxWidth(),
+                    isError = apellidosError,
+                    keyboardOptions = KeyboardOptions(
+                        capitalization = KeyboardCapitalization.Sentences,
+                        keyboardType = KeyboardType.Text,
+                        autoCorrect = false,
+                        imeAction = ImeAction.Next
+                    ),
+                    leadingIcon = {
+                        Icon(
+                            imageVector = Icons.Default.AddCircle,
+                            contentDescription = "Icono de persona"
+                        )
+                    }
+                )
+            }
         }
+
+        // Mensajes de error, si son necesarios
         if (nombresError) {
             Text("Campo obligatorio", color = MaterialTheme.colorScheme.error)
         }
         Spacer(modifier = Modifier.height(8.dp))
-
-        OutlinedTextField(
-            value = apellidos,
-            onValueChange = { apellidos = it },
-            label = {
-                Text(text = stringResource(id = R.string.apellidos))
-            },
-            modifier = Modifier.fillMaxWidth(),
-            isError = apellidosError,
-            keyboardOptions = KeyboardOptions(
-                capitalization = KeyboardCapitalization.Sentences,
-                keyboardType = KeyboardType.Text,
-                autoCorrect = false, imeAction = ImeAction.Next
-            ),
-            leadingIcon = {
-                Icon(
-                    imageVector = Icons.Default.AddCircle,
-                    contentDescription = "Icono de persona"
-                )
-            }
-        )
         if (apellidosError) {
             Text("Campo obligatorio", color = MaterialTheme.colorScheme.error)
         }
         Spacer(modifier = Modifier.height(8.dp))
 
         // Sexo Radio Buttons
-        Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.fillMaxWidth()){
+        Row(horizontalArrangement = Arrangement.Center, verticalAlignment = Alignment.CenterVertically ,modifier = Modifier.fillMaxWidth()){
             Icon(
                 imageVector = Icons.Default.Favorite,
                 contentDescription = "Icono de sexo",
@@ -183,7 +240,9 @@ fun PersonalDataForm(
         Spacer(modifier = Modifier.height(2.dp))
 
         // Fecha de Nacimiento Picker
-        Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.fillMaxWidth().padding(end = 6.dp)){
+        Row( horizontalArrangement = Arrangement.Center,
+            verticalAlignment = Alignment.CenterVertically,
+            modifier = Modifier.fillMaxWidth().padding(end = 6.dp)){
             Icon(
                 imageVector = Icons.Default.DateRange,
                 contentDescription = "Icono de calendario",
@@ -196,7 +255,7 @@ fun PersonalDataForm(
                 onClick = { openDate.value = true },
                 colors = ButtonDefaults.buttonColors(Color(0xFF2196F3)), //
                 modifier = Modifier
-                    .fillMaxWidth()
+                    .fillMaxWidth(0.8f)
                     .padding(16.dp)
             ) {
                 Text(text = if (fechaNacimiento.value.isNotEmpty()) fechaNacimiento.value else stringResource(id = R.string.seleccionar_fecha), color = Color.White)
@@ -223,7 +282,7 @@ fun PersonalDataForm(
                 label = { Text(text = stringResource(id = R.string.grado_escolaridad)) },
                 trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = expandedDropdown) },
                 colors = ExposedDropdownMenuDefaults.textFieldColors(),
-                modifier = Modifier.menuAnchor().fillMaxWidth(),
+                modifier = Modifier.menuAnchor().fillMaxWidth(0.6f),
                 leadingIcon = {
                     Icon(
                         imageVector = Icons.Filled.Menu,

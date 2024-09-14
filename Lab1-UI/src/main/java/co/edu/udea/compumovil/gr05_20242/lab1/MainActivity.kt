@@ -43,21 +43,27 @@ fun Forms(modifier: Modifier) {
     var persona = remember { mutableStateOf<PersonalDataModel>(PersonalDataModel())} // informacion
     val openForm1 = rememberSaveable { mutableStateOf<Boolean>(true) }
     val openForm2 = rememberSaveable { mutableStateOf<Boolean>(false) }
-    if(openForm1.value) {
+    if (openForm1.value) {
         PersonalDataForm(modifier = Modifier, openForm = openForm1, openForm2 = openForm2, onPersonaUpdated = { updatedPersona ->
-            // Actualiza el estado persona con los cambios del formulario
-            persona.value = updatedPersona})
+            // Actualiza todo el objeto de persona con los cambios
+            persona.value = updatedPersona
+        })
     }
-    if(!openForm1.value) {
-        Log.d("Ayuda", persona.value.toString())
+    if (openForm2.value) {
+        ContactDataForm(modifier = Modifier, openForm = openForm2,   onPersonaUpdated = { updatedPersona ->
+            // Crea un nuevo objeto con los campos actualizados
+            persona.value = persona.value.copy(
+                pais = updatedPersona.pais,
+                ciudad = updatedPersona.ciudad,
+                email = updatedPersona.email,
+                direccion = updatedPersona.direccion,
+                telefono = updatedPersona.telefono
+            )
+        })
     }
-    if(openForm2.value) {
-        ContactDataForm(modifier = Modifier, openForm = openForm1, onPersonaUpdated = { updatedPersona ->
-            // Actualiza el estado persona con los cambios del formulario
-            persona.value = updatedPersona})
-    }
-    if(!openForm2.value) {
-        Log.d("Ayuda", persona.value.toString())
+
+    if (!openForm1.value && !openForm2.value) {
+        Log.d("resultado", persona.value.toString()) // Debería mostrar los datos actualizados de contacto
     }
 }
 
