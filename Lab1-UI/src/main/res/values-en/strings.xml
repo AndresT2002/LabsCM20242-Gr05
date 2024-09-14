@@ -12,5 +12,13 @@
     <string name="fecha_nacimiento">Date of Birth</string>
     <string name="grado_escolaridad">Education Level</string>
     <string name="seleccionar_fecha">Select Date</string>
+    <string name="titulo_uno">Personal Information</string>
+    <string name="titulo_dos">Contact Information</string>
+    <string name="cargando">Loading...</string>
+    <string name="campo_obligatorio">Required field</string>
+    <string name="enviar">Send</string>
+    <string name="email_invalido">Invalid email format</string>
+    <string name="error_fecha_nacimiento">You must select a birth date</string>
+    <string name="error_sexo">You must select a gender</string>
 
 </resources>

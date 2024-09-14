@@ -12,4 +12,12 @@
     <string name="fecha_nacimiento">Fecha de Nacimiento</string>
     <string name="grado_escolaridad">Grado de Escolaridad</string>
     <string name="seleccionar_fecha">Seleccionar fecha</string>
+    <string name="titulo_uno">Información Personal</string>
+    <string name="titulo_dos">Información de Contacto</string>
+    <string name="cargando">Cargando...</string>
+    <string name="campo_obligatorio">Campo Obligatorio</string>
+    <string name="enviar">Enviar</string>
+    <string name="email_invalido">Formato de email inválido</string>
+    <string name="error_fecha_nacimiento">Debe seleccionar una fecha de nacimiento</string>
+    <string name="error_sexo">Debe seleccionar un sexo</string>
 </resources>

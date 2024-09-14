@@ -67,6 +67,8 @@ import java.text.SimpleDateFormat
 import java.util.*
 
 import androidx.compose.runtime.*
+import androidx.compose.ui.draw.drawBehind
+import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.ImeAction
@@ -118,7 +120,6 @@ fun ContactDataForm(
         "Perú", "República Dominicana", "Uruguay", "Venezuela"
     )
     var telefonoError by rememberSaveable { mutableStateOf(false) }
-    var direccionError by rememberSaveable { mutableStateOf(false) }
     var paisError by rememberSaveable { mutableStateOf(false) }
     var ciudadError by rememberSaveable { mutableStateOf(false) }
     var emailError by rememberSaveable { mutableStateOf<EmailError?>(null) }
@@ -147,6 +148,27 @@ fun ContactDataForm(
         .padding(16.dp)
         .padding(top = 52.dp)) {
 
+
+        Text(
+            text = stringResource(id = R.string.titulo_uno),
+            style = MaterialTheme.typography.titleLarge,
+            modifier = Modifier
+                .padding(bottom = 16.dp)
+                .fillMaxWidth()
+                .drawBehind {
+                    val strokeWidth = 1.dp.toPx()
+                    val y = size.height - strokeWidth / 2
+                    drawLine(
+                        color = Color.Gray,
+                        start = Offset(0f, y),
+                        end = Offset(size.width, y),
+                        strokeWidth = strokeWidth
+                    )
+                }
+        )
+
+
+
         // Teléfono
         OutlinedTextField(
             value = telefono,
@@ -164,7 +186,7 @@ fun ContactDataForm(
 
         )
         if (telefonoError) {
-            Text("Campo obligatorio", color = MaterialTheme.colorScheme.error)
+            Text(stringResource(id = R.string.campo_obligatorio), color = MaterialTheme.colorScheme.error)
         }
         Spacer(modifier = Modifier.height(8.dp))
 
@@ -174,7 +196,7 @@ fun ContactDataForm(
             onValueChange = { direccion = it },
             label = { Text(text = stringResource(id = R.string.direccion)) },
             modifier = Modifier.fillMaxWidth(),
-            isError = direccionError,
+
             keyboardOptions = KeyboardOptions(
                 capitalization = KeyboardCapitalization.Words,
                 autoCorrect = false, imeAction = ImeAction.Next
@@ -186,9 +208,7 @@ fun ContactDataForm(
                 )
             }
         )
-        if (direccionError) {
-            Text("Campo obligatorio", color = MaterialTheme.colorScheme.error)
-        }
+
         Spacer(modifier = Modifier.height(8.dp))
 
         // Email
@@ -216,8 +236,8 @@ fun ContactDataForm(
         emailError?.let { error ->
             Text(
                 text = when (error) {
-                    EmailError.Empty -> "Campo obligatorio"
-                    EmailError.InvalidFormat -> "Formato de email inválido"
+                    EmailError.Empty -> stringResource(id = R.string.campo_obligatorio)
+                    EmailError.InvalidFormat -> stringResource(id = R.string.email_invalido)
                 },
                 color = MaterialTheme.colorScheme.error
             )
@@ -265,7 +285,7 @@ fun ContactDataForm(
             }
         }
         if (paisError) {
-            Text("Campo obligatorio", color = MaterialTheme.colorScheme.error)
+            Text(stringResource(id = R.string.campo_obligatorio), color = MaterialTheme.colorScheme.error)
         }
         Spacer(modifier = Modifier.height(8.dp))
 
@@ -303,7 +323,7 @@ fun ContactDataForm(
             }
         }
         if (isLoading) {
-            Text("Cargando municipios...", color = MaterialTheme.colorScheme.secondary)
+            Text(stringResource(id = R.string.cargando), color = MaterialTheme.colorScheme.secondary)
         }
         if (error != null) {
             Text(error!!, color = MaterialTheme.colorScheme.error)
@@ -315,7 +335,6 @@ fun ContactDataForm(
         Button(
             onClick = {
                 telefonoError = telefono.isEmpty()
-                direccionError = direccion.isEmpty()
                 emailError = when {
                     email.isEmpty() -> EmailError.Empty
                     !isValidEmail(email) -> EmailError.InvalidFormat
@@ -324,7 +343,7 @@ fun ContactDataForm(
                 paisError = pais.isEmpty()
                 ciudadError = ciudad.isEmpty()
 
-                if (!telefonoError && !direccionError && emailError == null && !paisError && !ciudadError) {
+                if (!telefonoError && emailError == null && !paisError && !ciudadError) {
                     val updatedPersona = PersonalDataModel(
                         telefono = telefono,
                         direccion = direccion,
@@ -340,7 +359,7 @@ fun ContactDataForm(
             modifier = Modifier.fillMaxWidth(0.5f).align(Alignment.End),
             colors = ButtonDefaults.buttonColors(Color(0xFF2196F3))
         ) {
-            Text("Enviar")
+            Text(stringResource(id = R.string.enviar))
         }
     }
 }

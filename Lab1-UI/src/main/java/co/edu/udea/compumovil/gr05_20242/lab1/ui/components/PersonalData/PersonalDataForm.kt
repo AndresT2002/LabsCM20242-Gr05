@@ -48,6 +48,8 @@ import androidx.compose.runtime.*
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.drawBehind
+import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.layout.onGloballyPositioned
@@ -103,6 +105,28 @@ fun PersonalDataForm(
     Column(modifier = Modifier
         .padding(16.dp)
         .padding(top = 52.dp)) {
+
+
+
+        Text(
+            text = stringResource(id = R.string.titulo_uno),
+            style = MaterialTheme.typography.titleLarge,
+            modifier = Modifier
+                .padding(bottom = 16.dp)
+                .fillMaxWidth()
+                .drawBehind {
+                    val strokeWidth = 1.dp.toPx()
+                    val y = size.height - strokeWidth / 2
+                    drawLine(
+                        color = Color.Gray,
+                        start = Offset(0f, y),
+                        end = Offset(size.width, y),
+                        strokeWidth = strokeWidth
+                    )
+                }
+        )
+
+
         if (landscape) {
             Row(
                 modifier = Modifier.fillMaxWidth(),
@@ -176,6 +200,10 @@ fun PersonalDataForm(
                         )
                     }
                 )
+                // Mensajes de error, si son necesarios
+                if (nombresError) {
+                    Text(stringResource(id = R.string.campo_obligatorio), color = MaterialTheme.colorScheme.error)
+                }
 
                 Spacer(modifier = Modifier.height(8.dp))
 
@@ -203,13 +231,10 @@ fun PersonalDataForm(
             }
         }
 
-        // Mensajes de error, si son necesarios
-        if (nombresError) {
-            Text("Campo obligatorio", color = MaterialTheme.colorScheme.error)
-        }
+
         Spacer(modifier = Modifier.height(8.dp))
         if (apellidosError) {
-            Text("Campo obligatorio", color = MaterialTheme.colorScheme.error)
+            Text(stringResource(id = R.string.campo_obligatorio), color = MaterialTheme.colorScheme.error)
         }
         Spacer(modifier = Modifier.height(8.dp))
 
@@ -235,7 +260,7 @@ fun PersonalDataForm(
         }
         if (sexoError) {
 
-            Text("Debe seleccionar un sexo", color = MaterialTheme.colorScheme.error)
+            Text(stringResource(id = R.string.error_sexo), color = MaterialTheme.colorScheme.error)
         }
         Spacer(modifier = Modifier.height(2.dp))
 
@@ -266,7 +291,7 @@ fun PersonalDataForm(
         }
 
         if (fechaNacimientoError) {
-            Text("Debe seleccionar una fecha de nacimiento", color = MaterialTheme.colorScheme.error)
+            Text(stringResource(id = R.string.error_fecha_nacimiento), color = MaterialTheme.colorScheme.error)
         }
         Spacer(modifier = Modifier.height(8.dp))
 
@@ -315,7 +340,6 @@ fun PersonalDataForm(
             onClick = {
                 nombresError = nombres.isEmpty()
                 apellidosError = apellidos.isEmpty()
-                sexoError = sexo.isEmpty()
                 fechaNacimientoError = fechaNacimiento.value.isEmpty()
 
                 // Si no hay errores, procede con la asignación de datos
@@ -340,7 +364,7 @@ fun PersonalDataForm(
             modifier = Modifier.fillMaxWidth(0.5f).align(Alignment.End),
             colors =  ButtonDefaults.buttonColors(Color(0xFF2196F3))
         ) {
-            Text("Enviar")
+            Text(stringResource(id = R.string.enviar))
         }
     }
 }
